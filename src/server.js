@@ -47,10 +47,10 @@ const run = async () => {
 
   const initFunc = async () => {
     try {
-      console.log(">>>>>>>>Clearing market...", Date.now()/1000);
+      console.log(">>>>>>>>Clearing market...", Math.floor(Date.now()/1000));
       await api.clearMarket();
       let startTime = Math.floor(Date.now()/1000) + init_start;
-      console.log(">>>>>>>>Initializing market...", Date.now()/1000);
+      console.log(">>>>>>>>Initializing market...", Math.floor(Date.now()/1000));
       await api.initMarket(startTime, start_predict, 5);
       setTimeout(startFunc, init_start*1000);
     }
@@ -62,7 +62,7 @@ const run = async () => {
 
   const startFunc = async () => {
     try {
-      console.log(">>>>>>>>Starting market...", Date.now()/1000);
+      console.log(">>>>>>>>Starting market...", Math.floor(Date.now()/1000));
       await api.startMarket();
       setTimeout(endFunc, start_predict*2*1000);
     }
@@ -74,7 +74,7 @@ const run = async () => {
 
   const endFunc = async () => {
     try {
-      console.log(">>>>>>>>Ending market...", Date.now()/1000);
+      console.log(">>>>>>>>Ending market...", Math.floor(Date.now()/1000));
       api.endMarket();
       setTimeout(initFunc, end_init*1000);
     }
