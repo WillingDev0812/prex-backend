@@ -6,7 +6,7 @@
   "scripts": {
     "develop": "nodemon --exec babel-node src",
     "test": "mocha --require babel-core/register",
-    "build": "rimraf lib && babel src -d lib && cp src/abis/* lib/abis",
+    "build": "rimraf lib && babel src -d lib && mkdir -p lib/abis && cp src/abis/* lib/abis",
     "start": "node lib",
     "lint": "eslint src"
   },
