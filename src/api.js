@@ -4,11 +4,12 @@ import Web3 from "web3";
 import config from "./config";
 import address from './address';
 import market_abi from './abis/market.json';
+import market_registry_abi from './abis/market-registry.json';
 import price_feed_abi from './abis/price-feed.json';
 import * as utils from './utils';
 
 const web3 = new Web3(config.WEB3_PROVIDER_ADDRESS);
-const market = new web3.eth.Contract(market_abi, address.market.kovan);
+const market_registry = new web3.eth.Contract(market_registry_abi, address.market_registry.kovan);
 const price_feed = new web3.eth.Contract(price_feed_abi, address.price_feed.kovan);
 
 const sendTransaction = (target, privateKey, encodedABI) => {
@@ -17,7 +18,8 @@ const sendTransaction = (target, privateKey, encodedABI) => {
     var tx = {
       from: account.address,
       to: target,
-      gas: 1000000,
+      gas: 10000000,
+      gasPrice: 30000000000,
       data: encodedABI,
     };
     const signPromise = web3.eth.accounts.signTransaction(tx, privateKey);
@@ -45,26 +47,43 @@ export const sendMethod = (contract, method, ...params) => {
   }); 
 };
 
-export const clearMarket = async () => {
-  await sendMethod(market, "clearMarket");
+export const createMarket = async (pair, startTime, duration) => {
+  const result = await sendMethod(market_registry, "createMarket", pair, startTime, duration);
+  return result;
 }
 
-export const startMarket = async () => {
+export const startMarket = async (addr) => {
+  const market = new web3.eth.Contract(market_abi, addr);
   const result = await sendMethod(market, "startMarket");
   return result;
 }
 
-export const initMarket = async (startTime, duration, range) => {
-  await sendMethod(market, "initiate", startTime, duration, utils.toEthPrice(range), address.market_registry.kovan);
+export const endMarket = async (addr) => {
+  const market = new web3.eth.Contract(market_abi, addr);
+  const result = await sendMethod(market, "endMarket");
+  return result;
 }
 
-export const endMarket = async () => {
-  await sendMethod(market, "endMarket");
-}
 
 export const getLastPrice = async() => {
   const lastPrice = await price_feed.methods.latestRoundData().call();
   return utils.fromEthPrice(lastPrice.answer);
+}
+
+export const clearMarket = async () => {
+  const result = await sendMethod(market_registry, "clearMarket");
+  return result;
+}
+
+export const onMarketCreated = (callback, onerr) => {
+  market_registry.events.MarketCreated((err, res) => {
+    if (err === null) {
+      callback(res.returnValues);
+    } else {
+      if (onerr) onerr(err);
+      else console.log(err);
+    }
+  })
 }
 
 // export const newRequest = (callback) => {

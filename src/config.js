@@ -1,6 +1,6 @@
 
 const config = { 
-  WEB3_PROVIDER_ADDRESS: "wss://kovan.infura.io/ws/v3/2377373e9cc84228a6cea33645b511ea",
+  WEB3_PROVIDER_ADDRESS: "wss://kovan.infura.io/ws/v3/63ffb1bb29a147b892071b946f46d71d",
 }
 
 export default config;
